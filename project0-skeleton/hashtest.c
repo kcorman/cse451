@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <assert.h>
 #include "hash.h"
 
 static const size_t kBufferLength = 32;
@@ -22,6 +22,8 @@ static uint64_t hash_fn(const void* k) {
   return hash_val;
 }
 
+static void additional_tests();
+
 /* Matches the hash_compare definition in hash.h. This function compares
  * two keys that are strings. */
 static int hash_strcmp(const void* k1, const void* k2) {
@@ -39,7 +41,6 @@ int main(int argc, char* argv[]) {
   if (N <= 0 || N > kMaxInsertions) {
     N = kMaxInsertions;
   }
-
   /* Create the hash table. */
   hash_table* ht = hash_create(hash_fn, hash_strcmp);
 
@@ -90,6 +91,85 @@ int main(int argc, char* argv[]) {
    * to free both.
    */
   hash_destroy(ht, true, true);
-
+  additional_tests();
   return 0;
 }
+
+//Assumes the key is a pointer to an integer
+static uint64_t int_hash_func(const void *key){
+  int prime = 31;
+  return (uint64_t) (*(int *)key)*prime;
+}
+
+//assumes the key is a poitner to an integer
+static int int_compare_func(const void *key1, const void *key2){
+  int res = *(int *)key1 - *(int *)key2;
+  if(res < 0) return -1;
+  if(res == 0) return 0;
+  return 1;
+}
+
+//returns a new hash table that uses integer keys and integer values
+static hash_table *get_int_ht(){
+  hash_table *ht = hash_create(&int_hash_func, &int_compare_func);
+  return ht;
+}
+
+//Tries inserting a few values and ensuring that they are in the table
+static void insert_test(){
+  hash_table *ht = get_int_ht();
+  int *old_key_ptr = NULL;
+  int *old_val_ptr = NULL;
+  int key1 = 7;
+  int val1 = 93;
+  hash_insert(ht, (void *) &key1, (void *)&val1, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  assert(old_key_ptr == NULL);
+  assert(hash_is_present(ht, (void *)&key1));
+  int key2 = -54;
+  int val2 = 902943;
+  hash_insert(ht, (void *)&key2, (void *)&val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  assert(old_key_ptr == NULL);
+  assert(hash_is_present(ht, (void *)&key2)); 
+  assert(hash_is_present(ht, (void *)&key1));
+  //replace key1
+  hash_insert(ht, (void *)&key1, (void *)&val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  assert(*old_key_ptr == key1);
+  assert(*old_val_ptr == val1);
+  assert(hash_is_present(ht, (void *)&key1));
+  //lookup key 1
+  hash_lookup(ht, (void *)&key1, (void **)&old_val_ptr);
+  assert(*old_val_ptr == val2);
+  hash_destroy(ht,false,false);
+  printf("insert test successful.\n");
+}
+
+//inserts some values and them removes them
+static void remove_test(){
+  hash_table *ht = get_int_ht();
+  int *old_key_ptr = NULL;
+  int *old_val_ptr = NULL;
+  int key1 = 7;
+  int val1 = 93;
+  hash_insert(ht, (void *) &key1, (void *)&val1, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  assert(hash_is_present(ht, (void *)&key1));
+  int key2 = -54;
+  int val2 = 902943;
+  hash_insert(ht, (void *)&key2, (void *)&val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  assert(hash_is_present(ht, (void *)&key2)); 
+  assert(hash_is_present(ht, (void *)&key1));
+  assert(hash_remove(ht, (void *) &key1, (void **)&old_key_ptr, (void **)&old_val_ptr));
+  assert(*old_key_ptr == key1);
+  assert(*old_val_ptr == val1);
+  assert(hash_is_present(ht, (void *)&key2)); 
+  assert(!hash_is_present(ht, (void *)&key1)); 
+  hash_destroy(ht, false, false);
+  printf("remove test successful.\n");
+}
+
+static void additional_tests(){
+  insert_test();
+  remove_test();
+}
+
+
+
