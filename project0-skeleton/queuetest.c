@@ -12,10 +12,14 @@ bool show_one(queue_element* elem, queue_function_args* args) {
 int append_size_test(){
   queue *q = queue_create();
   int x = 0, y = 1, z = 2;
+  void *ptr;
   queue_append(q, &x);
   queue_append(q, &y);
   queue_append(q, &z);
   assert(queue_size(q) == 3);
+  queue_remove(q, &ptr);
+  queue_remove(q, &ptr);
+  queue_remove(q, &ptr);
   free(q);
   return 0;
 }

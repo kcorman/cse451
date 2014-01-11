@@ -122,22 +122,22 @@ static void insert_test(){
   int *old_val_ptr = NULL;
   int key1 = 7;
   int val1 = 93;
-  hash_insert(ht, (void *) &key1, (void *)&val1, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  hash_insert(ht, &key1, &val1, (void **)&old_key_ptr, (void **)&old_val_ptr);
   assert(old_key_ptr == NULL);
-  assert(hash_is_present(ht, (void *)&key1));
+  assert(hash_is_present(ht, &key1));
   int key2 = -54;
   int val2 = 902943;
-  hash_insert(ht, (void *)&key2, (void *)&val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  hash_insert(ht, &key2, &val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
   assert(old_key_ptr == NULL);
-  assert(hash_is_present(ht, (void *)&key2)); 
-  assert(hash_is_present(ht, (void *)&key1));
+  assert(hash_is_present(ht, &key2)); 
+  assert(hash_is_present(ht, &key1));
   //replace key1
-  hash_insert(ht, (void *)&key1, (void *)&val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  hash_insert(ht, &key1, &val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
   assert(*old_key_ptr == key1);
   assert(*old_val_ptr == val1);
-  assert(hash_is_present(ht, (void *)&key1));
+  assert(hash_is_present(ht, &key1));
   //lookup key 1
-  hash_lookup(ht, (void *)&key1, (void **)&old_val_ptr);
+  hash_lookup(ht, &key1, (void **)&old_val_ptr);
   assert(*old_val_ptr == val2);
   hash_destroy(ht,false,false);
   printf("insert test successful.\n");
@@ -150,18 +150,18 @@ static void remove_test(){
   int *old_val_ptr = NULL;
   int key1 = 7;
   int val1 = 93;
-  hash_insert(ht, (void *) &key1, (void *)&val1, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  hash_insert(ht, &key1, &val1, (void **)&old_key_ptr, (void **)&old_val_ptr);
   assert(hash_is_present(ht, (void *)&key1));
   int key2 = -54;
   int val2 = 902943;
-  hash_insert(ht, (void *)&key2, (void *)&val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
-  assert(hash_is_present(ht, (void *)&key2)); 
-  assert(hash_is_present(ht, (void *)&key1));
-  assert(hash_remove(ht, (void *) &key1, (void **)&old_key_ptr, (void **)&old_val_ptr));
+  hash_insert(ht, &key2, &val2, (void **)&old_key_ptr, (void **)&old_val_ptr);
+  assert(hash_is_present(ht, &key2)); 
+  assert(hash_is_present(ht, &key1));
+  assert(hash_remove(ht, &key1, (void **)&old_key_ptr, (void **)&old_val_ptr));
   assert(*old_key_ptr == key1);
   assert(*old_val_ptr == val1);
-  assert(hash_is_present(ht, (void *)&key2)); 
-  assert(!hash_is_present(ht, (void *)&key1)); 
+  assert(hash_is_present(ht, &key2)); 
+  assert(!hash_is_present(ht, &key1)); 
   hash_destroy(ht, false, false);
   printf("remove test successful.\n");
 }
