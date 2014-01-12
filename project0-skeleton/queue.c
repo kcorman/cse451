@@ -71,6 +71,23 @@ bool queue_is_empty(queue* q) {
   return q->head == NULL;
 }
 
+/* See queue.h for documentation */
+void queue_reverse(queue* q){
+  queue_link *current, *prev, *next;
+  current = q->head;
+  prev = NULL;
+  while(current != NULL){
+    //set current to point to the previous node,
+    //but first store current->next
+    next = current->next;
+    current->next = prev;
+    //update previous to be our current node now that we used it
+    prev = current;
+    current = next;
+  }
+  q->head = prev;
+}
+
 /* private */
 static bool queue_count_one(queue_element* elem, queue_function_args* args) {
   size_t* count = (size_t*) args;
@@ -96,4 +113,33 @@ bool queue_apply(queue* q, queue_function qf, queue_function_args* args) {
   }
 
   return true;
+}
+
+
+void queue_sort(queue* q, queue_compare qc){
+  //simple selection sort
+  //current is rightmost sorted element
+  queue_link head_link;
+  head_link.next = q->head;
+  queue_link *current = &head_link;
+  while(current->next != NULL){
+    //pick the smallest next element after current
+    //to be current->next, preserving the rest of the list structure
+    queue_link *smallest = current->next;
+    queue_link *itr = current->next;
+    while(itr != NULL){
+      if(qc(smallest->elem, itr->elem) > 0){
+        smallest = itr;
+      }
+      itr = itr->next;
+    }
+    //now we have a ptr to the element right before the smallest one
+    //so swap out the smallest with current->next
+    queue_element *elem = current->next->elem;
+    current->next->elem = smallest->elem;
+    smallest->elem = elem;
+    //update current
+    current = current->next;
+  }
+  q->head = head_link.next;
 }
