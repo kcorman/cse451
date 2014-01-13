@@ -12,15 +12,11 @@ bool show_one(queue_element* elem, queue_function_args* args) {
 int append_size_test(){
   queue *q = queue_create();
   int x = 0, y = 1, z = 2;
-  void *ptr;
   queue_append(q, &x);
   queue_append(q, &y);
   queue_append(q, &z);
   assert(queue_size(q) == 3);
-  queue_remove(q, &ptr);
-  queue_remove(q, &ptr);
-  queue_remove(q, &ptr);
-  free(q);
+  queue_destroy(q,false);
   return 0;
 }
 
@@ -34,7 +30,7 @@ int remove_size_test(){
   queue_element *ret_val;
   queue_remove(q, &ret_val);
   assert(queue_size(q) == 2); 
-  free(q);
+  queue_destroy(q,false);
   return 0;
 }
 
@@ -52,7 +48,7 @@ int remove_value_test(){
   assert(*ret_val == y);
   queue_remove(q, (queue_element **)&ret_val); 
   assert(*ret_val == z);
-  free(q);
+  queue_destroy(q,false);
   return 0;
 }
 
@@ -70,7 +66,7 @@ int append_apply_test(){
   
   int index = 0;
   queue_apply(q, show_one, &index);
-  free(q);
+  queue_destroy(q,false);
   return 0;
 }
 
@@ -93,7 +89,7 @@ int reverse_test(){
   assert(*ret_val == y);
   queue_remove(q, (queue_element **)&ret_val); 
   assert(*ret_val == x);
-  free(q);
+  queue_destroy(q,false);
   return 0;
 }
 
@@ -125,7 +121,7 @@ int sort_test(){
     assert(prev <= *ret_val);
     prev = *ret_val;
   }
-  free(q);
+  queue_destroy(q,false);
   return 0;
 }
 int main(int argc, char* argv[]) {

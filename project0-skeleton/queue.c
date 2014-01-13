@@ -152,3 +152,15 @@ void queue_sort(queue* q, queue_compare qc){
   }
   q->head = head_link.next;
 }
+
+void queue_destroy(queue *q, bool free_elems){
+  queue_link *next = NULL; 
+  for (queue_link* cur = q->head; cur; cur = next) {
+    next = cur->next;
+    if(free_elems){
+      free(cur->elem);
+    }
+    free(cur);
+  }
+  free(q);
+}

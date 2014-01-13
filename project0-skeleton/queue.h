@@ -96,5 +96,12 @@ typedef int (*queue_compare)(queue_element* /* e1* */, queue_element* /* e2* */)
 // Sorts the elements of the given queue in place.
 void queue_sort(queue* q, queue_compare qc);
 
+//Destroys the given queue, freeing it from memory
+//if free_elems is true, this will free the individual elements in the queue
+//if set to false, this will not free them. This should be set to true for dynamically
+//allocated elements, but false otherwise
+//For an empty queue it doesn't matter
+void queue_destroy(queue *q, bool free_elems);
+
 #endif  // _QUEUE_H_
 
