@@ -114,7 +114,15 @@ bool queue_apply(queue* q, queue_function qf, queue_function_args* args) {
 
   return true;
 }
-
+static void swap(queue_link *bef_a, queue_link *bef_b){
+  queue_link *temp = bef_a->next;
+  bef_a->next = bef_b->next;
+  bef_b->next = temp;
+  //swap stuff that swapped nodes point to
+  temp = bef_a->next->next;
+  bef_a->next->next = bef_b->next->next;
+  bef_b->next->next = temp;
+}
 
 void queue_sort(queue* q, queue_compare qc){
   //simple selection sort
@@ -122,22 +130,23 @@ void queue_sort(queue* q, queue_compare qc){
   queue_link head_link;
   head_link.next = q->head;
   queue_link *current = &head_link;
-  while(current->next != NULL){
+  while(current && current->next != NULL){
     //pick the smallest next element after current
     //to be current->next, preserving the rest of the list structure
-    queue_link *smallest = current->next;
-    queue_link *itr = current->next;
-    while(itr != NULL){
-      if(qc(smallest->elem, itr->elem) > 0){
-        smallest = itr;
+    queue_link *bef_smallest = current;
+    queue_link *itr = current;
+    while(itr->next != NULL){
+      if(qc(bef_smallest->next->elem, itr->next->elem) > 0){
+        bef_smallest = itr;
       }
       itr = itr->next;
     }
     //now we have a ptr to the element right before the smallest one
     //so swap out the smallest with current->next
-    queue_element *elem = current->next->elem;
-    current->next->elem = smallest->elem;
-    smallest->elem = elem;
+    //queue_element *elem = current->next->elem;
+    //current->next->elem = bef_smallest->next->elem;
+    //bef_smallest->elem = elem;
+    swap(current, bef_smallest);
     //update current
     current = current->next;
   }
